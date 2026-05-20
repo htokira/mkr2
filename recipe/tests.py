@@ -28,3 +28,17 @@ class RecipeViewsTestCase(TestCase):
         response = self.client.get(reverse('main'))
         self.assertEqual(len(response.context['recipes']), 10)
 
+    def test_category_detail_view_success(self):
+        response = self.client.get(reverse('category_detail', args=[self.category_soups.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'category_detail.html')
+        
+        self.assertEqual(response.context['category'], self.category_soups)
+        
+        recipes_in_category = list(response.context['category'])
+        self.assertEqual(len(recipes_in_category), 6)
+
+    def test_category_detail_view_404(self):
+        invalid_id = 999
+        response = self.client.get(reverse('category_detail', args=[invalid_id]))
+        self.assertEqual(response.status_code, 404)
